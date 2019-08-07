@@ -1,0 +1,654 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title></title>
+</head>
+<style type="text/css">
+    /* внешние границы таблицы серого цвета толщиной 1px */
+table {border: 0.5px solid } 
+/* границы ячеек первого ряда таблицы */
+th {border: 0.5px solid;
+text-align: center;}
+/* границы ячеек тела таблицы */
+td {border: 0.5px solid;
+  text-align: center;
+ }
+  #table1{
+  
+  }
+</style>
+<body>
+	<a>Фильтр по вылету (по Москве)</a></br>
+	<a>С</a></br></br>
+	<a>
+    <span>
+      Ведите дату : 
+<input type="text" id="display1" name="result" onchange="input()" placeholder="07.10.2018" size="10" maxlength="10">
+    </span>
+    <span>
+      Ведите время : 
+<input type="text" id="display2" name="result" onchange="input()" placeholder="09:12" size="5" maxlength="5">
+    </span>
+</a></br></br>
+<a>До</a></br></br>
+<a>
+    <span>
+      Ведите дату : 
+<input type="text" id="display3" name="result" onchange="input()" placeholder="07.10.2018" size="10" maxlength="10">
+    </span>
+    <span>
+      Ведите время : 
+<input type="text" id="display4" name="result" onchange="input()" placeholder="09:35" size="5" maxlength="5">
+    </span>
+
+</br></br>
+<button id="button1">Отфильтровать</button>
+<button id="button2">Сбросить фильтр</button>
+</br>
+<span>&nbsp;</span>
+
+</a>
+
+
+
+
+  <table id="table1" style="border:1px solid;"
+  cellspacing="0">
+
+
+
+  
+</table>
+<script type="text/javascript">
+ 
+
+
+  
+
+var flight = {
+
+    "nflight": ['1211' , '1221','1231' ,'1111','2211'   ],
+
+  "code_departure": ['SVO','VKO','LED','VKO','SVO'],
+   "code_arrival": ['VVO','YKS','HTA','SVX','UFA'],
+
+
+"time_departure": ['August 19, 2019 10:15','August 21, 2019 11:25','August 21, 2019 08:14','August 18, 2019 13:35','August 15, 2019 10:23'],
+   "time_arrival": ['August 20, 2019 12:15','August 21, 2019 20:15','August 21, 2019 15:15','August 18, 2019 16:27','August 15, 2019 21:11']
+
+  
+
+};
+
+
+
+var airport = {
+
+    "code": ['SVO' ,'VKO','LED','VVO','YKS','HTA','SVX','UFA'],
+
+  "name": ['Шереме́тьево','Внуково','Пулково','Владивосток','Якутск','Кадала','Кольцово','Уфа'],
+
+  "timezone": [3,3,3,10,9,9,5,5]
+
+
+};
+
+
+
+
+var ht = ['Номер рейса','Аэропорт вылета + название','Аэропорт прилёта + название','Время вылета (л)','Время прилёта(л)','Время в пути ','Дата вылета','Дата прилета'];
+
+
+var nflight=flight.nflight;
+var code_d = flight.code_departure;
+var code_a = flight.code_arrival;
+var time_d = flight.time_departure;
+var time_a = flight.time_arrival;
+var code_air = airport.code;
+var name_air = airport.name;
+var tz = airport.timezone;
+var df = nflight.length;
+
+
+
+var i = 0;
+var data = [];
+/*var info_v = [];*/
+var info_v = new Map();
+
+var info_av = new Map();
+var info_ap = new Map();
+var info_avrus = new Map();
+var avrus;
+var info_aprus = new Map();
+var aprus;
+var info_tv = new Map();
+var info_tp = new Map();
+var data_v = new Map();
+var data_p = new Map();
+
+var time_p = new Map();
+
+for ( i = 0; i < df; i++) {
+console.log(nflight[i]);
+console.log(code_d[i]);
+console.log(code_a[i]);
+var dp =  code_air.length;
+var mi=0;
+
+while (dp != 0) {
+
+	
+	
+	if (code_d[i]==code_air[mi]) {
+		utcv = tz[mi];
+		avrus = name_air[mi];
+
+		console.log('utcv=',utcv);
+
+	}
+	 if (code_a[i]==code_air[mi]) {
+		utcp = tz[mi];
+		aprus = name_air[mi];
+		console.log('utcp=',utcp);
+
+	}
+	
+	
+	mi++;
+	dp=dp-1;
+
+}
+
+
+var td = time_d[i];
+var event1 = new Date(td );
+var jsonDate1 = event1.toJSON();
+console.log(jsonDate1);
+console.log(jsonDate1.slice(0, 4));
+var gv = jsonDate1.slice(0, 4);
+ gv = Number.parseInt(gv);
+ console.log(gv);
+console.log(jsonDate1.slice(5, 7));
+var mev = jsonDate1.slice(5, 7);
+ mev = Number.parseInt(mev);
+ console.log(mev);
+console.log(jsonDate1.slice(8, 10));
+var dv = jsonDate1.slice(8, 10);
+ dv = Number.parseInt(dv);
+ console.log(dv);
+console.log(jsonDate1.slice(11, 13));
+var cv = td.slice(td.length-5, td.length-3);
+ cv = Number.parseInt(cv)+utcv;
+ console.log(cv);
+console.log(td.slice(td.length-2, td.length));
+var mv = td.slice(td.length-2, td.length);
+ mv = Number.parseInt(mv);
+ console.log(mv);
+
+ if(gv % 4 ){ // Если число не кратно n
+    			dvg=366;
+    		}
+ else{
+ 	dvg=365;
+ }
+ if (mev% 2) {
+ 	if(mev==2){
+ 		if (dvg==366) {
+ 			dvm=29;
+ 		}
+ 		else{
+ 			dvm=28;
+ 		}
+
+ 	}
+ 	else{
+ 		dvm=30;
+ 	}
+
+ }
+ else{
+dvm=31;
+ }
+ chislvl=mv+cv*60+dv*1440+mev*dvm*1440+gv*dvg*dvm*1440;
+ chvv=mv+cv*60;
+ 
+ dmg= String (jsonDate1.slice(8, 10)) + '-' + String (jsonDate1.slice(5, 7))+ '-' + String (jsonDate1.slice(0, 4));
+data_v.set(chislvl,dmg);
+ data.push(chislvl);
+info_v.set(chislvl,nflight[i]);
+info_av.set(chislvl,code_d[i]);
+info_ap.set(chislvl,code_a[i]);
+info_avrus.set(chislvl,avrus);
+info_aprus.set(chislvl,aprus);
+
+vv= String (cv-utcv) + ':' + String (mv);
+info_tv.set(chislvl,vv);
+console.log('chislvl=',chislvl);
+
+
+var ta = time_a[i];
+var event2 = new Date(ta );
+var jsonDate2 = event2.toJSON();
+console.log(jsonDate2);
+console.log(jsonDate2.slice(0, 4));
+var gp = jsonDate2.slice(0, 4);
+ gp = Number.parseInt(gp);
+ console.log(gp);
+console.log(jsonDate2.slice(5, 7));
+var mep = jsonDate2.slice(5, 7);
+ mep = Number.parseInt(mep);
+ console.log(mep);
+console.log(jsonDate2.slice(8, 10));
+var dp = jsonDate2.slice(8, 10);
+ dp = Number.parseInt(dp);
+ console.log(dp);
+console.log(jsonDate2.slice(11, 13));
+var cp= ta.slice(ta.length-5, ta.length-3);
+ cp = Number.parseInt(cp)+utcp;
+ console.log(cp);
+console.log(jsonDate2.slice(14, 16));
+var mp = ta.slice(ta.length-2, ta.length);
+ mp = Number.parseInt(mp);
+ console.log(mp);
+
+ if(gp % 4 ){ // Если число не кратно n
+    			dpg=366;
+    		}
+ else{
+ 	dpg=365;
+ }
+ if (mep% 2) {
+ 	if(mep==2){
+ 		if (dpg==366) {
+ 			dpm=29;
+ 		}
+ 		else{
+ 			dpm=28;
+ 		}
+
+ 	}
+ 	else{
+ 		dpm=30;
+ 	}
+
+ }
+ else{
+dpm=31;
+ }
+ chislpos=mp+cp*60+dp*1440+mep*dpm*1440+gp*dpg*dpm*1440;
+chvp=mp+cp*60;
+vvvp=chvp-chvv;
+hvvvp = Math.floor( vvvp / 60 ); //чтобы отбросить дробную часть
+mvvvp = vvvp % 60;
+time =  String (hvvvp) + ' час  ' + String (mvvvp) + ' мин';
+time_p.set(chislvl,time);
+dmgp= String (jsonDate2.slice(8, 10)) + '-' + String (jsonDate2.slice(5, 7))+ '-' + String (jsonDate2.slice(0, 4));
+
+data_p.set(chislvl,dmgp);
+ console.log("chislpos=",chislpos);
+
+vp= String (cp-utcp) + ':' + String (mp);
+info_tp.set(chislvl,vp);
+
+}
+
+console.log(data);
+data.sort(function (a, b) {
+    return a - b;
+});
+
+console.log(data);/*отсортированное по возраста*/
+
+var str = document.getElementById('table1');
+str.innerHTML = "";
+var mi = 0;
+var addTr = document.createElement("tr");
+for ( mi = 0; mi < ht.length; mi++) {
+
+var addTd = document.createElement("th");
+        addTd.innerHTML=ht[mi];
+        
+    addTr.appendChild(addTd);
+    str.appendChild(addTr);
+    
+}
+
+
+var wi = 0;
+for ( wi = 0; wi < data.length; wi++) {
+	var addTr = document.createElement("tr");
+	var e = data[wi];
+	var x = info_v.get(e);
+
+var addTd = document.createElement("td");
+        addTd.innerHTML=x;
+        
+    addTr.appendChild(addTd);
+    str.appendChild(addTr);
+
+var addTd = document.createElement("td");
+        addTd.innerHTML=info_av.get(e)+'('+info_avrus.get(e)+')';
+    
+    addTr.appendChild(addTd);
+    str.appendChild(addTr);
+
+var addTd = document.createElement("td");
+        addTd.innerHTML=info_ap.get(e)+'('+info_aprus.get(e)+')';
+     
+
+    addTr.appendChild(addTd);
+    str.appendChild(addTr);
+
+var addTd = document.createElement("td");
+        addTd.innerHTML=info_tv.get(e);
+        
+    addTr.appendChild(addTd);
+    str.appendChild(addTr);
+
+var addTd = document.createElement("td");
+        addTd.innerHTML=info_tp.get(e);
+        
+    addTr.appendChild(addTd);
+    str.appendChild(addTr);
+
+var addTd = document.createElement("td");
+        addTd.innerHTML=time_p.get(e);
+        
+    addTr.appendChild(addTd);
+    str.appendChild(addTr);
+
+
+
+var addTd = document.createElement("td");
+        addTd.innerHTML=data_v.get(e);
+        
+    addTr.appendChild(addTd);
+    str.appendChild(addTr);
+
+   
+var addTd = document.createElement("td");
+        addTd.innerHTML=data_p.get(e);
+        
+    addTr.appendChild(addTd);
+    str.appendChild(addTr); 
+
+}
+
+</script>
+<script>
+  var button1 = document.getElementById("button1");
+  button1.addEventListener("click", function() {
+    document.getElementById('display1').style.border = "2px solid ";
+   dat1 =  document.getElementById('display1').value;
+  den1 =  document.getElementById('display2').value;
+  dat2 =  document.getElementById('display3').value;
+  den2 =  document.getElementById('display4').value;
+  
+  if (dat1[2] == '.' && dat1[5] == '.') {
+    
+    var den = dat1.slice(0, 2);
+    den = Number.parseInt(den);
+    
+    
+     var mes = dat1.slice(3, 5);
+     mes = Number.parseInt(mes);
+     
+    
+    var god = dat1.slice(6, dat1.length);
+    god = Number.parseInt(god);
+    
+
+
+
+  }
+  else {
+    document.getElementById('display1').style.border = "2px solid red";
+    
+  };
+  if (den1[2] == ':') {
+     document.getElementById('display2').style.border = "2px solid ";
+     var ch1 = den1.slice(0, 2);
+    ch1 = Number.parseInt(ch1)+3;
+    
+var mm1 = den1.slice(3, 5);
+    mm1 = Number.parseInt(mm1);
+    
+
+     if(god % 4 ){ // Если число не кратно n
+          dvg1=366;
+        }
+ else{
+  dvg1=365;
+ }
+ if (mes% 2) {
+  if(mes==2){
+    if (dvg1==366) {
+      dvm1=29;
+    }
+    else{
+      dvm1=28;
+    }
+
+  }
+  else{
+    dvm1=30;
+  }
+
+ }
+ else{
+dvm1=31;
+ }
+
+ chislvl1=mm1+ch1*60+den*1440+mes*dvm1*1440+god*dvg1*dvm1*1440;
+ 
+ 
+
+  }
+  else {
+    document.getElementById('display2').style.border = "2px solid red";
+    
+  };
+
+
+
+   if (den2[2] == ':') {
+
+     document.getElementById('display4').style.border = "2px solid ";
+     
+
+ den2 =  document.getElementById('display4').value;
+ var ch2 = den2.slice(0, 2);
+    ch2 = Number.parseInt(ch2)+3;
+   
+    
+var mm2 = den2.slice(3, 5);
+    mm2 = Number.parseInt(mm2);
+    
+    var den2 = dat2.slice(0, 2);
+    den2 = Number.parseInt(den2);
+    
+     var mes2 = dat2.slice(3, 5);
+     mes2 = Number.parseInt(mes2);
+     
+    var god2 = dat2.slice(6, dat2.length);
+    god2 = Number.parseInt(god2);
+    
+
+
+
+
+    
+      if(god2 % 4 ){ // Если число не кратно n
+          dvg2=366;
+        }
+ else{
+  dvg2=365;
+ }
+ if (mes2% 2) {
+  if(mes2==2){
+    if (dvg2==366) {
+      dvm2=29;
+    }
+    else{
+      dvm2=28;
+    }
+
+  }
+  else{
+    dvm2=30;
+  }
+
+ }
+ else{
+dvm2=31;
+
+ }
+ 
+
+ 
+ chislvl2=mm2+ch2*60+den2*1440+mes2*dvm2*1440+god2*dvg2*dvm2*1440;
+ 
+     
+
+  }
+  else {
+    document.getElementById('display4').style.border = "2px solid red";
+    
+  };
+  if (dat2[2] == '.' && dat2[5] == '.') {
+    document.getElementById('display3').style.border = "2px solid ";
+    
+    var den2 = dat2.slice(0, 2);
+    den2 = Number.parseInt(den2);
+    
+    
+     var mes2 = dat2.slice(3, 5);
+     mes2 = Number.parseInt(mes2);
+     
+    var god2 = dat2.slice(6, dat2.length);
+    god2 = Number.parseInt(god2);
+    
+
+  }
+  else {
+    document.getElementById('display3').style.border = "2px solid red";
+    
+  };
+
+
+
+  if (chislvl1) {
+    
+    if (chislvl2) {
+    
+
+
+
+
+var str = document.getElementById('table1');
+str.innerHTML = "";
+var mi = 0;
+var addTr = document.createElement("tr");
+for ( mi = 0; mi < ht.length; mi++) {
+
+var addTd = document.createElement("th");
+        addTd.innerHTML=ht[mi];
+        
+    addTr.appendChild(addTd);
+    str.appendChild(addTr);
+    
+}
+
+var wi = 0;
+for ( wi = 0; wi < data.length; wi++) {
+  if (data[wi]>chislvl1) {
+    if (data[wi]<chislvl2) {
+
+
+
+      var addTr = document.createElement("tr");
+  var e = data[wi];
+  var x = info_v.get(e);
+
+var addTd = document.createElement("td");
+        addTd.innerHTML=x;
+        
+    addTr.appendChild(addTd);
+    str.appendChild(addTr);
+
+var addTd = document.createElement("td");
+        addTd.innerHTML=info_av.get(e)+'('+info_avrus.get(e)+')';
+    
+    addTr.appendChild(addTd);
+    str.appendChild(addTr);
+
+var addTd = document.createElement("td");
+        addTd.innerHTML=info_ap.get(e)+'('+info_aprus.get(e)+')';
+     
+
+
+    addTr.appendChild(addTd);
+    str.appendChild(addTr);
+
+var addTd = document.createElement("td");
+        addTd.innerHTML=info_tv.get(e);
+        
+    addTr.appendChild(addTd);
+    str.appendChild(addTr);
+
+var addTd = document.createElement("td");
+        addTd.innerHTML=info_tp.get(e);
+        
+    addTr.appendChild(addTd);
+    str.appendChild(addTr);
+
+var addTd = document.createElement("td");
+        addTd.innerHTML=time_p.get(e);
+        
+    addTr.appendChild(addTd);
+    str.appendChild(addTr);
+
+
+
+var addTd = document.createElement("td");
+        addTd.innerHTML=data_v.get(e);
+        
+    addTr.appendChild(addTd);
+    str.appendChild(addTr);
+
+   
+var addTd = document.createElement("td");
+        addTd.innerHTML=data_p.get(e);
+        
+    addTr.appendChild(addTd);
+    str.appendChild(addTr); 
+
+
+
+
+
+
+
+    }
+
+
+  }
+}
+
+
+
+  }
+  }
+  });
+  var button2 = document.getElementById("button2");
+  button2.addEventListener("click", function() {
+    location.reload();
+  });
+</script>
+
+</body>
+</html>
+
